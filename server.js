@@ -40,7 +40,6 @@ app.use('/', routers);
 
 app.get('/logout', async (req, res) => {
     const socketId = req.session.socketId;
-    console.log("===>>> io", io.of("/"));
     if (socketId && _.get(io.of("/"), ['connected', socketId])) {
         console.log(`forcefully closing socket ${socketId}`);
         io.sockets.connected[socketId].disconnect(true);
@@ -58,7 +57,6 @@ io.use(wrap(sessionMiddleware));
 io.use(wrap(passport.initialize()));
 io.use(wrap(passport.session()));
 io.use((socket, next) => {
-    console.log("===>>>> socket.request", socket.request);
     if (socket.request.user) {
         next();
     } else {
@@ -79,9 +77,10 @@ mongoose.connection.once('open', () => {
     console.log("Error in connecting DB. Error::", err)
 });
 
+const port = process.env.PORT || 5000;
 
-httpServer.listen('5000', () => {
-    console.log('listening on port 5000')
+httpServer.listen(port, () => {
+    console.log(`listening on port ${port}`)
 });
 
 module.exports.io = io;
