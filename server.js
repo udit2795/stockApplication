@@ -53,6 +53,7 @@ passport.use(Strategy);
 
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 
+// wrapping passport with io
 io.use(wrap(sessionMiddleware));
 io.use(wrap(passport.initialize()));
 io.use(wrap(passport.session()));

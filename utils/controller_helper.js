@@ -3,6 +3,7 @@ const schemas = require('../models/schema');
 
 
 const setData = (schema, data) => {
+    // adding values to all schema
     _.each(data, (value, index) => {
         if (index === 'stocks') {
             value = JSON.parse(value);
@@ -17,14 +18,18 @@ const setData = (schema, data) => {
 const getProfileData = (userData, stockData) => {
     let context = {};
     let myStock = userData.stocks;
+    // converting myStock(array of object) to object of objects
     var myStockobj = myStock.reduce((obj, stock) => (obj[stock.code] = stock, obj), {});
+    // adding current price in each stock
     _.each(stockData, stock => {
         if (myStockobj[stock.code]) {
             myStockobj[stock.code].currentPrice = stock.price;
             delete stock.id;
         }
     });
+    // converting object of objects back to array of object
     myStockobj = Object.entries(myStockobj).map((e) => (e[1]));
+    // shorting the stock in descending order based on stack quantity
     myStockobj.sort((a, b) => (a.quantity > b.quantity) ? -1 : ((b.quantity > a.quantity) ? 1 : 0));
     context.profile = {
         name: userData.name,

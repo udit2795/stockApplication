@@ -22,6 +22,7 @@ const stockSchema = new mongoose.Schema({
     low: Number
 });
 
+// middleware encrypting password before saving
 userSchema.pre('save', async function (next) {
     try {
         if (this.isNew) {
@@ -34,6 +35,7 @@ userSchema.pre('save', async function (next) {
     }
 });
 
+// method to decrypting password.
 userSchema.methods.isValidPassword = async function (password) {
     try {
         return await bcrypt.compare(password, this.password)

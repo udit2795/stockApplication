@@ -20,7 +20,7 @@ const Strategy = new LocalStrategy({
             return done(null, false);
         }
     } catch (error) {
-        // return false msg to passport.authonticate
+        // return false msg to passport.authenticate
         return done(null, false);
     }
 }));
