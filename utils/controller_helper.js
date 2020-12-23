@@ -1,4 +1,6 @@
 const _ = require('lodash');
+const schemas = require('../models/schema');
+
 
 const setData = (schema, data) => {
     _.each(data, (value, index) => {
@@ -52,8 +54,30 @@ const modifyData = (user, data) => {
     user.stocks = stocks;
 };
 
+const checkDuplicate = async (data, type)=>{
+    let isDuplicate = false;
+    try {
+        if(type === 'STOCK'){
+            const stock = await schemas[type].find({code: data.code});
+            if(!_.isEmpty(stock)){
+                isDuplicate = true
+            }
+        }
+        if (type === 'USER'){
+            const user = await schemas[type].find({email: data.email});
+            if(!_.isEmpty(user)){
+                isDuplicate = true
+            }
+        }
+    }catch (err) {
+        console.error("Error while checking deduplication. Error", err)
+    }
+    return isDuplicate
+};
+
 module.exports = {
     setData: setData,
     getProfileData: getProfileData,
-    modifyData: modifyData
+    modifyData: modifyData,
+    checkDuplicate: checkDuplicate
 };

@@ -4,20 +4,29 @@ const schemas = require('../models/schema');
 const controllerHelper = require('../utils/controller_helper');
 
 
-const addData = (req, res) => {
+const addData = async (req, res) => {
     const data = req.body;
     const type = _.get(data, 'type', '').toUpperCase();
     let schema = new schemas[type]();
-    schema = controllerHelper.setData(schema, data);
-    schema.save((err, saveObj) => {
-        if (err) {
-            console.error("addData:: Error in saving data. Error::", err);
-            res.send('Error in saving data. Error::', err);
-        } else {
-            console.debug('data saved', saveObj);
-            res.send('data saved');
+    try {
+        const isDuplicate = await controllerHelper.checkDuplicate(data, type);
+        if(isDuplicate){
+            res.send('Data already exist');
+        }else {
+            schema = controllerHelper.setData(schema, data);
+            schema.save((err, saveObj) => {
+                if (err) {
+                    console.error("addData:: Error in saving data. Error::", err);
+                    res.send('Error in saving data. Error::', err);
+                } else {
+                    console.debug('data saved', saveObj);
+                    res.send('data saved');
+                }
+            })
         }
-    })
+    }catch (err) {
+        res.send('Error in saving data. Error::', err)
+    }
 };
 
 
